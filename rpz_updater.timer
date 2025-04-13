@@ -1,0 +1,8 @@
+[Unit]
+Description=Periodic update of bind rpz files
+After=named.service
+[Timer]
+OnCalendar= *-*-* 22:00:00
+Persistent=yes
+[Install]
+WantedBy=timers.target
