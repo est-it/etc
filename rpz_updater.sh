@@ -1,16 +1,13 @@
 #!/bin/bash
-cleanup() {
-    if (( $error > 0 )); then rm $tmpfile; fi
-}
-trap cleanup EXIT
 #Download function with error handling
 get_rpz() {
     echo "get zone at $2"
-    
-    curl -Lfo $1 $2
+
+    /usr/bin/curl -Lfo $1 $2
     error=$?
     if (( error > 0 )); then
         echo "curl error code: $error! exiting."
+        rm $1
         exit $error
     fi
 }
@@ -37,29 +34,27 @@ reload() {
 error=0
 
 #get pro list
-tmpfile=$(mktemp)
-master="/var/lib/named/master/hagezi-pro.rpz"
-get_rpz $tmpfile https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/pro.txt
-check_vers $master $tmpfile
+master="/var/lib/named/dyn/hagezi-pro.rpz"
+get_rpz $master-tmp https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/pro.txt
+check_vers $master $master-tmp
 if (( $? == 0 )); then
-    echo "move $tmpfile to $master"
-    mv $tmpfile $master
+    echo "move $master-tmp to $master"
+    mv $master-tmp $master
     reload hagezi-pro.rpz
 else
-    echo "removing $tmpfile"
-    rm $tmpfile
+    echo "removing $master-tmp"
+    rm $master-tmp
 fi
 
 #get tif list
-tmpfile=$(mktemp)
-master="/var/lib/named/master/hagezi-tif.rpz"
-get_rpz $tmpfile https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/tif.txt
-check_vers $master $tmpfile
+master="/var/lib/named/dyn/hagezi-tif.rpz"
+get_rpz $master-tmp https://raw.githubusercontent.com/hagezi/dns-blocklists/main/rpz/tif.txt
+check_vers $master $master-tmp
 if (( $? == 0 )); then
-    echo "move $tmpfile to $master"
-    mv $tmpfile $master
+    echo "move $master-tmp to $master"
+    mv $master-tmp $master
     reload hagezi-tif.rpz
 else
-    echo "removing $tmpfile"
-    rm $tmpfile
+    echo "removing $master-tmp"
+    rm $master-tmp
 fi
