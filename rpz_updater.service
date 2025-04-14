@@ -7,4 +7,4 @@ User=named
 Group=named
 ExecStart=/usr/local/bin/rpz_updater.sh
 ReadOnlyPaths=/
-ReadWritePaths=/var/lib/named/master /tmp
+ReadWritePaths=/var/lib/named/dyn
